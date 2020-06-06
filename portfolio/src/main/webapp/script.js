@@ -26,10 +26,3 @@ function addRandomGreeting() {
   const greetingContainer = document.getElementById('greeting-container');
   greetingContainer.innerText = greeting;
 }
-
-
-// <div id="content">
-//       <!-- <p>Click the button below to get a random fact about me!</p>
-//       <button onclick="addRandomGreeting()">Hello</button>
-//       <div id="greeting-container"></div> -->
-// </div>
