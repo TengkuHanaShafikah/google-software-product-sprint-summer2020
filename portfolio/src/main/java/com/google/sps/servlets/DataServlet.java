@@ -32,9 +32,23 @@ import com.google.sps.data.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
+import com.google.cloud.language.v1.Sentiment;
+
 /** Servlet that returns comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
+
+  // Pass user's comment text to LanguageServiceClient and receive sentiment score.
+  public float getSentimentScore(String text) throws IOException {
+    Document doc = Document.newBuilder().setContent(text).setType(Document.Type.PLAIN_TEXT).build();
+    LanguageServiceClient languageService = LanguageServiceClient.create();
+    Sentiment sentiment = languageService.analyzeSentiment(doc).getDocumentSentiment();
+    float score = sentiment.getScore();
+    languageService.close();
+    return score;
+  }
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -45,15 +59,19 @@ public class DataServlet extends HttpServlet {
 
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
+      // Get comment's properties.
       long id = entity.getKey().getId();
       String name = (String) entity.getProperty("name");
       String text = (String) entity.getProperty("text");
+      double score = (double) entity.getProperty("score");
       long time = (long) entity.getProperty("time");
-
+      
+      // Create Comment object
       Comment comment = new Comment(id, name, text, time);
       comments.add(comment);
     }
-
+    
+    // Return JSON
     Gson gson = new Gson();
     String json = gson.toJson(comments);
 
@@ -68,12 +86,17 @@ public class DataServlet extends HttpServlet {
     String userInput = request.getParameter("text");
     long time = System.currentTimeMillis();
 
+    // Pass user's comment text to LanguageServiceClient and receive sentiment score.
+    float score = getSentimentScore(userInput);
+
     // Store comment in the comment entity.
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("name", userName);
     commentEntity.setProperty("text", userInput);
+    commentEntity.setProperty("score", score); 
     commentEntity.setProperty("time", time); 
 
+    // Store comment into Datastore.
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
 
