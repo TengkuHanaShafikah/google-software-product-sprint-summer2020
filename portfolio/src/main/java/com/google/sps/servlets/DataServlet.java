@@ -67,7 +67,7 @@ public class DataServlet extends HttpServlet {
       long time = (long) entity.getProperty("time");
       
       // Create Comment object
-      Comment comment = new Comment(id, name, text, time);
+      Comment comment = new Comment(id, text, name, score, time);
       comments.add(comment);
     }
     
@@ -101,6 +101,6 @@ public class DataServlet extends HttpServlet {
     datastore.put(commentEntity);
 
     // Redirect back to the HTML page.
-    response.sendRedirect("/index.html");
+    response.sendRedirect("/contact.html");
   }
 }
