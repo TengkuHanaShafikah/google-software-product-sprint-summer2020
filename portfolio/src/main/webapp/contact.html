@@ -9,7 +9,7 @@
         <script src="script.js"></script>
   </head>
 
-  <body>
+  <body onload="getComments()">
     <div class="topheader navbar">
         <img src="/images/tengkuhanashafikah_logo.png">
         <br>
@@ -23,8 +23,19 @@
     </div>
 
     <div id="content">
-        <button class="button" onclick="getGreeting()">Say Hello!</button>
-        <div id="greeting-container"></div>
+        <!–– Comments ––>
+        <h2 align="center">Comments</h2>
+        <p align="center"> Feel free to leave a comment down below! 💬</p>
+
+        <form action="/data" method="POST">
+            <input type="text" name="name" placeholder="Name"><br/>
+            <input type="text" name="text" placeholder="Say something..."><br/>
+            <input type="submit" value="Post"><br/><br/>
+        </form>
+        
+        <div id="comments-container">
+            <ul id="comments-list"/></ul>
+        </div>
     </div>
   </body>
 
